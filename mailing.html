@@ -1244,21 +1244,28 @@
         }
 
         function showSuccessPage() {
+            console.log('showSuccessPage 함수 실행됨');
+            
             // 전체 폼 컨테이너를 숨기기
             const formContainer = document.querySelector('.form-container');
+            console.log('formContainer 찾음:', formContainer);
             if (formContainer) {
                 formContainer.style.display = 'none';
+                console.log('formContainer 숨김 처리됨');
             }
             
             // 성공 컨테이너 표시
             const successContainer = document.getElementById('successContainer');
+            console.log('successContainer 찾음:', successContainer);
             if (successContainer) {
                 successContainer.style.display = 'block';
                 successContainer.classList.add('show');
+                console.log('successContainer 표시 처리됨');
             }
             
             // 페이지 상단으로 스크롤
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log('스크롤 처리됨');
         }
 
         form.addEventListener('submit', async (e) => {
@@ -1296,280 +1303,95 @@
                 // 예식장 전체 주소
                 const fullAddress = `${data.venueAddress || ''} ${data.venueAddressDetail || ''}`.trim() || '응답 없음';
 
-                // 이메일 본문 생성 (더 예쁜 HTML 형식)
-                const emailMessage = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { 
-            font-family: 'Noto Sans KR', Arial, sans-serif; 
-            line-height: 1.6; 
-            color: #333; 
-            margin: 0; 
-            padding: 0; 
-            background: linear-gradient(135deg, #f5f7fc 0%, #e8eef9 100%); 
-        }
-        .email-container { 
-            max-width: 650px; 
-            margin: 20px auto; 
-            background: white; 
-            border-radius: 16px; 
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(26, 60, 140, 0.15);
-            border: 1px solid #d1ddf0;
-        }
-        .header { 
-            background: linear-gradient(135deg, #1a2447 0%, #2d4a85 50%, #1a3c8c 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-            position: relative;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                        radial-gradient(circle at 80% 40%, rgba(255,255,255,0.08) 1px, transparent 1px);
-            background-size: 100px 100px, 120px 120px;
-        }
-        .header h1 { 
-            font-size: 24px; 
-            font-weight: 800; 
-            margin: 0; 
-            position: relative; 
-            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            letter-spacing: 2px;
-        }
-        .content { 
-            padding: 40px 35px; 
-        }
-        .section { 
-            margin-bottom: 35px; 
-            padding: 30px;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e3ebf7;
-            box-shadow: 0 4px 16px rgba(26, 60, 140, 0.08);
-            position: relative;
-        }
-        .section::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 4px; height: 100%;
-            background: linear-gradient(to bottom, #1a2447, #2d4a85, #1a3c8c);
-            border-radius: 2px 0 0 2px;
-        }
-        .section-title {
-            color: #1a2447;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f4fc;
-        }
-        .question-group { 
-            margin-bottom: 15px; 
-        }
-        .question { 
-            font-weight: 600; 
-            color: #2d4a85; 
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-        .answer { 
-            background: linear-gradient(135deg, #fafbfe 0%, #f5f7fc 100%);
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid #e3ebf7;
-            color: #1a2447;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        .highlight { 
-            background: linear-gradient(135deg, #fff8e1 0%, #fff3c4 100%);
-            border: 1px solid #ffcc02;
-            color: #b8860b;
-        }
-        .important {
-            background: linear-gradient(135deg, #f0f4fc 0%, #e8f0fc 100%);
-            border: 2px solid #2d4a85;
-            font-weight: 700;
-        }
-    </style>
-</head>
-<body>
-    <div class="email-container">
-        <div class="header">
-            <h1>결혼식 청첩장 신청서</h1>
-        </div>
-        
-        <div class="content">
-            <div class="section">
-                <div class="section-title">👰🏻‍♀️ 신랑 신부 정보</div>
-                
-                <div class="question-group">
-                    <div class="question">1. 신랑님의 성을 적어주세요</div>
-                    <div class="answer">${data.groomLastName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">2. 신랑님의 이름을 적어주세요</div>
-                    <div class="answer">${data.groomFirstName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">3. 신부님의 성을 적어주세요</div>
-                    <div class="answer">${data.brideLastName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">4. 신부님의 이름을 적어주세요</div>
-                    <div class="answer">${data.brideFirstName || '응답 없음'}</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">👨‍👩‍👦 신랑 부모님 정보</div>
-                
-                <div class="question-group">
-                    <div class="question">1. 신랑 아버님 성을 적어주세요</div>
-                    <div class="answer">${data.groomFatherLastName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">2. 신랑 아버님 이름을 적어주세요</div>
-                    <div class="answer">${data.groomFatherFirstName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">3. 신랑 어머님 성을 적어주세요</div>
-                    <div class="answer">${data.groomMotherLastName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">4. 신랑 어머님 성함을 적어주세요</div>
-                    <div class="answer">${data.groomMotherFirstName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">5. 신랑 부모님과의 관계</div>
-                    <div class="answer">${data.groomRelation || '응답 없음'}</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">👨‍👩‍👧 신부 부모님 정보</div>
-                
-                <div class="question-group">
-                    <div class="question">1. 신부 아버님 성을 적어주세요</div>
-                    <div class="answer">${data.brideFatherLastName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">2. 신부 아버님 이름을 적어주세요</div>
-                    <div class="answer">${data.brideFatherFirstName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">3. 신부 어머님 성을 적어주세요</div>
-                    <div class="answer">${data.brideMotherLastName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">4. 신부 어머님 성함을 적어주세요</div>
-                    <div class="answer">${data.brideMotherFirstName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">5. 신부 부모님과의 관계</div>
-                    <div class="answer">${data.brideRelation || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">6. 고인 표기</div>
-                    <div class="answer">${deceasedText}</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">💒 예식 정보</div>
-                
-                <div class="question-group">
-                    <div class="question">모시는 글을 작성해주세요</div>
-                    <div class="answer highlight">${data.invitationText || '응답 없음'}${data.invitationText === '기타' && data.customInvitationText ? '<br><br>' + data.customInvitationText.replace(/\n/g, '<br>') : ''}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">예식장 명을 적어주세요</div>
-                    <div class="answer">${data.venueName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">예식장 층과 홀 이름을 적어주세요</div>
-                    <div class="answer">${data.venueFloorHall || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">예식장 주소를 입력해주세요</div>
-                    <div class="answer">${fullAddress}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">예식 일정을 적어주세요</div>
-                    <div class="answer highlight">${weddingDateTime}</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">📝 주문자 정보</div>
-                
-                <div class="question-group">
-                    <div class="question">비어있는질문</div>
-                    <div class="answer">비어있는답변</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">★ 주문자 성함 (주문하신 고객님의 성함을 꼭 남겨주세요) ★</div>
-                    <div class="answer important">${data.ordererName || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">주문자 연락처 (상담 카톡없이 신청서 먼저 작성 시에 기재해주세요)</div>
-                    <div class="answer important">${data.ordererPhone || '응답 없음'}</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">🌍 영어 이름 (선택사항)</div>
-                
-                <div class="question-group">
-                    <div class="question">신랑 성을 영어로 적어주세요</div>
-                    <div class="answer">${data.groomLastNameEng || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">신랑 이름을 영어로 적어주세요</div>
-                    <div class="answer">${data.groomFirstNameEng || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">신부 성을 영어로 적어주세요</div>
-                    <div class="answer">${data.brideLastNameEng || '응답 없음'}</div>
-                </div>
-                
-                <div class="question-group">
-                    <div class="question">신부 이름을 영어로 적어주세요</div>
-                    <div class="answer">${data.brideFirstNameEng || '응답 없음'}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>`;
+                // 이메일 본문 생성 (텍스트 형식)
+                const emailMessage = `종이청첩장 신청서 폼에 새로운 응답이 추가되었습니다.
+
+=== 신랑 신부 정보 ===
+1. 신랑님의 성을 적어주세요
+${data.groomLastName || '응답 없음'}
+
+2. 신랑님의 이름을 적어주세요
+${data.groomFirstName || '응답 없음'}
+
+3. 신부님의 성을 적어주세요
+${data.brideLastName || '응답 없음'}
+
+4. 신부님의 이름을 적어주세요
+${data.brideFirstName || '응답 없음'}
+
+=== 신랑 부모님 정보 ===
+1. 신랑 아버님 성을 적어주세요
+${data.groomFatherLastName || '응답 없음'}
+
+2. 신랑 아버님 이름을 적어주세요
+${data.groomFatherFirstName || '응답 없음'}
+
+3. 신랑 어머님 성을 적어주세요
+${data.groomMotherLastName || '응답 없음'}
+
+4. 신랑 어머님 성함을 적어주세요
+${data.groomMotherFirstName || '응답 없음'}
+
+5. 신랑 부모님과의 관계
+${data.groomRelation || '응답 없음'}
+
+=== 신부 부모님 정보 ===
+1. 신부 아버님 성을 적어주세요
+${data.brideFatherLastName || '응답 없음'}
+
+2. 신부 아버님 이름을 적어주세요
+${data.brideFatherFirstName || '응답 없음'}
+
+3. 신부 어머님 성을 적어주세요
+${data.brideMotherLastName || '응답 없음'}
+
+4. 신부 어머님 성함을 적어주세요
+${data.brideMotherFirstName || '응답 없음'}
+
+5. 신부 부모님과의 관계
+${data.brideRelation || '응답 없음'}
+
+6. 고인 표기
+${deceasedText}
+
+=== 예식 정보 ===
+모시는 글을 작성해주세요
+${data.invitationText || '응답 없음'}${data.invitationText === '기타' && data.customInvitationText ? '\n' + data.customInvitationText : ''}
+
+예식장 명을 적어주세요
+${data.venueName || '응답 없음'}
+
+예식장 층과 홀 이름을 적어주세요
+${data.venueFloorHall || '응답 없음'}
+
+예식장 주소를 입력해주세요
+${fullAddress}
+
+예식 일정을 적어주세요
+${weddingDateTime}
+
+=== 주문자 정보 ===
+비어있는질문
+비어있는답변
+
+★ 주문자 성함 (주문하신 고객님의 성함을 꼭 남겨주세요) ★
+${data.ordererName || '응답 없음'}
+
+주문자 연락처 (상담 카톡없이 신청서 먼저 작성 시에 기재해주세요)
+${data.ordererPhone || '응답 없음'}
+
+=== 영어 이름 (선택사항) ===
+신랑 성을 영어로 적어주세요
+${data.groomLastNameEng || '응답 없음'}
+
+신랑 이름을 영어로 적어주세요
+${data.groomFirstNameEng || '응답 없음'}
+
+신부 성을 영어로 적어주세요
+${data.brideLastNameEng || '응답 없음'}
+
+신부 이름을 영어로 적어주세요
+${data.brideFirstNameEng || '응답 없음'}`;
 
                 // EmailJS로 이메일 전송
                 const templateParams = {
@@ -1590,7 +1412,10 @@
                 
                 // 성공 메시지 표시 후 성공 페이지로 이동
                 showMessage('신청서가 성공적으로 제출되었습니다!', 'success');
+                
+                console.log('showSuccessPage 함수 호출 시작');
                 setTimeout(() => {
+                    console.log('setTimeout 실행됨');
                     showSuccessPage();
                 }, 1500);
 
