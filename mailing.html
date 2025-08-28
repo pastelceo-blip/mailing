@@ -1244,8 +1244,13 @@
         }
 
         function showSuccessPage() {
-            form.style.display = 'none';
+            // 폼 전체를 숨기기
+            document.querySelector('.form-container').style.display = 'none';
+            // 성공 컨테이너 표시
             successContainer.classList.add('show');
+            successContainer.style.display = 'block';
+            // 페이지 상단으로 스크롤
+            window.scrollTo(0, 0);
         }
 
         form.addEventListener('submit', async (e) => {
