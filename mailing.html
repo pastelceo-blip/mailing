@@ -1083,11 +1083,29 @@
     <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        console.log('스크립트 시작');
+        console.log('HTML 로드됨');
         
-        // EmailJS 초기화
-        emailjs.init("nsvla0kWskoDaA0Yk");
-        console.log('EmailJS 초기화 완료');
+        // DOM이 완전히 로드된 후 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 로드 완료');
+            
+            // EmailJS 체크
+            if (typeof emailjs !== 'undefined') {
+                console.log('EmailJS 사용 가능');
+                emailjs.init("nsvla0kWskoDaA0Yk");
+                console.log('EmailJS 초기화 완료');
+            } else {
+                console.error('EmailJS 로드 실패');
+            }
+            
+            // 기본 테스트
+            const testBtn = document.getElementById('submitBtn');
+            if (testBtn) {
+                console.log('제출 버튼 찾음');
+            } else {
+                console.error('제출 버튼 없음');
+            }
+        });
 
         // 다음 주소 검색
         window.searchAddress = function() {
