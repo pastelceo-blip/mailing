@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결혼식 청첩장 정보 입력폼</title>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fc 0%, #e8eef9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(26, 60, 140, 0.15);
+            overflow: hidden;
+            border: 1px solid #d1ddf0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a2447 0%, #2d4a85 50%, #1a3c8c 100%);
+            color: #ffffff;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 40%, rgba(255,255,255,0.08) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 100px 100px, 120px 120px, 80px 80px;
+        }
+
+        .header h1 {
+            font-size: 2.6rem;
+            margin-bottom: 18px;
+            font-weight: 200;
+            letter-spacing: 4px;
+            position: relative;
+            color: #ffffff;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.92;
+            font-weight: 300;
+            position: relative;
+            color: #e6f2ff;
+            letter-spacing: 1px;
+        }
+
+        .form-container {
+            padding: 60px 45px;
+            background: linear-gradient(to bottom, #ffffff 0%, #fafbfe 100%);
+        }
+
+        .section {
+            margin-bottom: 50px;
+            padding: 40px 35px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e3ebf7;
+            box-shadow: 0 8px 32px rgba(26, 60, 140, 0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            box-shadow: 0 12px 40px rgba(26, 60, 140, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a2447, #2d4a85, #1a3c8c);
+            border-radius: 2px 0 0 2px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: #1a2447;
+            margin-bottom: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, #2d4a85, transparent);
+            border-radius: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #1a2447;
+            font-size: 0.98rem;
+            letter-spacing: 0.5px;
+        }
+
+        .required {
+            color: #ff4757;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+            font-size: 0.9rem;
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: rgba(255, 71, 87, 0.1);
+            -webkit-text-fill-color: #ff4757;
+        }
+
+        .optional {
+            color: #6b7890;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* 텍스트 줄바꿈 최적화 */
+        label, .radio-text, .success-message, .section-title {
+            word-break: keep-all;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .radio-text {
+            white-space: pre-line;
+            line-height: 1.7;
+        }
+
+        /* 입력 필드 개선 */
+        input, textarea, select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #c8d4e8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            font-family: inherit;
+            color: #1a2447;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        /* 텍스트 영역 특별 처리 */
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            word-break: keep-all;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        /* 긴 텍스트를 위한 특별 클래스 */
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2d4a85;
+            background: #fafbfe;
+            box-shadow: 0 0 0 4px rgba(45, 74, 133, 0.1);
+        }
+
+        input[required] {
+            border-color: #1a3c8c;
+            border-width: 2px;
+        }
+
+        input[required]:focus {
+            border-color: #ff4757;
+            box-shadow: 0 0 0 4px rgba(255, 71, 87, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-item, .radio-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 22px;
+            background: linear-gradient(135deg, #fafbfe 0%, #f5f7fc 100%);
+            border-radius: 12px;
+            border: 2px solid #d8e3f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover, .radio-item:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfe 100%);
+            border-color: #2d4a85;
+            box-shadow: 0 6px 24px rgba(45, 74, 133, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .radio-item.selected {
+            border-color: #1a2447;
+            background: linear-gradient(135deg, #f0f4fc 0%, #e8f0fc 100%);
+            border-width: 2px;
+            box-shadow: 0 8px 32px rgba(26, 36, 71, 0.2);
+        }
+
+        .radio-title {
+            font-weight: 600;
+            color: #1a2447;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+        }
+
+        .radio-text {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: #3a4a66;
+            white-space: pre-line;
+        }
+
+        .radio-content {
+            flex: 1;
+        }
+
+        .checkbox-item {
+            align-items: center;
+            padding: 18px;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 18px;
+            margin-top: 6px;
+            transform: scale(1.3);
+            flex-shrink: 0;
+            accent-color: #2d4a85;
+        }
+
+        .address-group {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .address-input {
+            flex: 1;
+        }
+
+        .address-btn {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #2d4a85 0%, #1a3c8c 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 16px rgba(45, 74, 133, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .address-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #1a2447 0%, #2d4a85 100%);
+            box-shadow: 0 8px 24px rgba(45, 74, 133, 0.4);
+        }
+
+        .address-btn:active {
+            transform: translateY(0);
+        }
+
+        .datetime-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 22px;
+            background: linear-gradient(135deg, #1a2447 0%, #2d4a85 50%, #1a3c8c 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 50px;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 32px rgba(26, 60, 140, 0.3);
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #0f1a3a 0%, #1a2447 50%, #2d4a85 100%);
+            box-shadow: 0 12px 40px rgba(26, 60, 140, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 16px rgba(26, 60, 140, 0.2);
+        }
+
+        .status-message {
+            padding: 18px 24px;
+            border-radius: 10px;
+            margin-top: 25px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success {
+            background: linear-gradient(135deg, #f0f9f0, #e8f5e8);
+            color: #2d6a2d;
+            border: 2px solid #c3e6c3;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #fdf0f0, #fce8e8);
+            color: #8b2635;
+            border: 2px solid #f5c6cb;
+        }
+
+        .success-container {
+            display: none;
+            background: linear-gradient(135deg, #f0f4fc 0%, #e8f0fc 100%);
+            border-radius: 20px;
+            padding: 50px;
+            margin-top: 40px;
+            text-align: center;
+            border: 2px solid #2d4a85;
+            box-shadow: 0 12px 48px rgba(26, 60, 140, 0.2);
+        }
+
+        .success-container.show {
+            display: block;
+        }
+
+        .success-title {
+            font-size: 2rem;
+            color: #1a2447;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(26, 36, 71, 0.1);
+            letter-spacing: 1px;
+        }
+
+        .success-message {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #3a4a66;
+            margin-bottom: 35px;
+            white-space: pre-line;
+        }
+
+        .consultant-btn {
+            display: inline-block;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #1a2447 0%, #2d4a85 100%);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(26, 60, 140, 0.3);
+            border: none;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        .consultant-btn:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #0f1a3a 0%, #1a2447 100%);
+            box-shadow: 0 12px 40px rgba(26, 60, 140, 0.4);
+            text-decoration: none;
+            color: #ffffff;
+        }
+
+        .consultant-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .custom-text {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .custom-text.show {
+            display: block;
+        }
+
+        .sample-preview {
+            background: linear-gradient(135deg, #f5f7fc 0%, #e8f0fc 100%);
+            border: 2px solid #d8e3f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            white-space: pre-line;
+            display: none;
+            color: #3a4a66;
+        }
+
+        .sample-preview.show {
+            display: block;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-bottom: 0;
+            flex-shrink: 0;
+            accent-color: #2d4a85;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + label {
+            color: #1a2447;
+            font-weight: 600;
+        }
+
+        .radio-item input[type="radio"]:checked + .radio-content {
+            color: #1a2447;
+        }
+
+        .radio-item input[type="radio"]:checked + .radio-content .radio-title {
+            color: #1a2447;
+        }
+
+        /* 스크롤바 스타일링 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5fc;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #2d4a85, #1a3c8c);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #1a2447, #2d4a85);
+        }
+
+        /* 반응형 디자인 - 모바일 우선 */
+        @media (max-width: 1200px) {
+            .container {
+                margin: 10px;
+                max-width: none;
+            }
+            
+            .form-container {
+                padding: 50px 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .container {
+                margin: 0;
+                border-radius: 12px;
+            }
+            
+            .form-row, .datetime-group {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .header {
+                padding: 40px 25px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+                margin-bottom: 12px;
+            }
+
+            .header p {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+            
+            .form-container {
+                padding: 35px 20px;
+            }
+            
+            .section {
+                padding: 25px 20px;
+                margin-bottom: 30px;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .section-title::after {
+                min-width: 50px;
+            }
+
+            .radio-group {
+                grid-template-columns: 1fr;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-item, .checkbox-item {
+                padding: 18px 15px;
+            }
+
+            .radio-title {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+
+            .radio-text {
+                font-size: 0.85rem;
+                line-height: 1.6;
+            }
+
+            .address-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .address-btn {
+                width: 100%;
+                padding: 16px;
+                font-size: 0.95rem;
+            }
+
+            input, textarea, select {
+                padding: 14px 16px;
+                font-size: 16px; /* iOS 줌 방지 */
+            }
+
+            label {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+                line-height: 1.4;
+                word-break: keep-all;
+                word-wrap: break-word;
+            }
+
+            .submit-btn {
+                padding: 18px;
+                font-size: 1.1rem;
+                letter-spacing: 1px;
+                margin-top: 35px;
+            }
+
+            .success-container {
+                padding: 35px 25px;
+                margin-top: 30px;
+            }
+
+            .success-title {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+                line-height: 1.3;
+            }
+
+            .success-message {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                margin-bottom: 25px;
+            }
+
+            .consultant-btn {
+                padding: 16px 30px;
+                font-size: 1rem;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            /* 모바일에서 긴 텍스트 자동 줄바꿈 */
+            .radio-text, .success-message {
+                word-break: keep-all;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.6rem;
+                letter-spacing: 1px;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+            }
+
+            .form-container {
+                padding: 25px 15px;
+            }
+
+            .section {
+                padding: 20px 15px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+                gap: 10px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .radio-item, .checkbox-item {
+                padding: 15px 12px;
+            }
+
+            .radio-item input[type="radio"] {
+                width: 18px;
+                height: 18px;
+                margin-right: 12px;
+            }
+
+            .checkbox-item input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                margin-right: 10px;
+            }
+
+            input, textarea, select {
+                padding: 12px 14px;
+            }
+
+            .submit-btn {
+                padding: 16px;
+                font-size: 1rem;
+            }
+
+            .success-container {
+                padding: 25px 15px;
+            }
+
+            .success-title {
+                font-size: 1.4rem;
+            }
+
+            .consultant-btn {
+                padding: 14px 25px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* 태블릿 가로모드 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .datetime-group {
+                grid-template-columns: 2fr 1fr;
+                gap: 15px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
+        /* 큰 화면에서의 최적화 */
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 800px;
+            }
+
+            .form-container {
+                padding: 70px 60px;
+            }
+
+            .section {
+                padding: 50px 45px;
+            }
+
+            .header {
+                padding: 80px 50px;
+            }
+
+            .header h1 {
+                font-size: 3rem;
+            }
+
+            .header p {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* 고급스러운 애니메이션 효과 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.3s; }
+        .section:nth-child(5) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>결혼식 청첩장 정보</h1>
+            <p>두 사람의 소중한 만남을 위한 정보를 입력해주세요</p>
+        </div>
+
+        <div class="form-container">
+            <form id="weddingForm">
+                <!-- 신랑신부 정보 -->
+                <div class="section">
+                    <h3 class="section-title">신랑 신부</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomLastName">1. 신랑님의 성 <span class="required">(필수)</span></label>
+                            <input type="text" id="groomLastName" name="groomLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="groomFirstName">2. 신랑님의 이름 <span class="required">(필수)</span></label>
+                            <input type="text" id="groomFirstName" name="groomFirstName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="brideLastName">3. 신부님의 성 <span class="required">(필수)</span></label>
+                            <input type="text" id="brideLastName" name="brideLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="brideFirstName">4. 신부님의 이름 <span class="required">(필수)</span></label>
+                            <input type="text" id="brideFirstName" name="brideFirstName" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신랑 부모님 정보 -->
+                <div class="section">
+                    <h3 class="section-title">신랑 부모님</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomFatherLastName">1. 신랑 아버님 성 <span class="required">(필수)</span></label>
+                            <input type="text" id="groomFatherLastName" name="groomFatherLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="groomFatherFirstName">2. 신랑 아버님 이름 <span class="required">(필수)</span></label>
+                            <input type="text" id="groomFatherFirstName" name="groomFatherFirstName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomMotherLastName">3. 신랑 어머님 성 <span class="required">(필수)</span></label>
+                            <input type="text" id="groomMotherLastName" name="groomMotherLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="groomMotherFirstName">4. 신랑 어머님 이름 <span class="required">(필수)</span></label>
+                            <input type="text" id="groomMotherFirstName" name="groomMotherFirstName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="groomRelation">5. 신랑 부모님과의 관계 <span class="required">(필수)</span></label>
+                        <select id="groomRelation" name="groomRelation" required>
+                            <option value="">선택해주세요</option>
+                            <option value="장남">장남</option>
+                            <option value="차남">차남</option>
+                            <option value="삼남">삼남</option>
+                            <option value="사남">사남</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 신부 부모님 정보 -->
+                <div class="section">
+                    <h3 class="section-title">신부 부모님</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="brideFatherLastName">1. 신부 아버님 성 <span class="required">(필수)</span></label>
+                            <input type="text" id="brideFatherLastName" name="brideFatherLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="brideFatherFirstName">2. 신부 아버님 이름 <span class="required">(필수)</span></label>
+                            <input type="text" id="brideFatherFirstName" name="brideFatherFirstName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="brideMotherLastName">3. 신부 어머님 성 <span class="required">(필수)</span></label>
+                            <input type="text" id="brideMotherLastName" name="brideMotherLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="brideMotherFirstName">4. 신부 어머님 이름 <span class="required">(필수)</span></label>
+                            <input type="text" id="brideMotherFirstName" name="brideMotherFirstName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="brideRelation">5. 신부 부모님과의 관계 <span class="required">(필수)</span></label>
+                        <select id="brideRelation" name="brideRelation" required>
+                            <option value="">선택해주세요</option>
+                            <option value="장녀">장녀</option>
+                            <option value="차녀">차녀</option>
+                            <option value="삼녀">삼녀</option>
+                            <option value="사녀">사녀</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>6. 고인 표기 <span class="optional">(선택사항)</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="groomFatherDeceased" name="deceased" value="신랑 아버지 故 표기">
+                                <label for="groomFatherDeceased">신랑 아버지 故 표기</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="groomMotherDeceased" name="deceased" value="신랑 어머니 故 표기">
+                                <label for="groomMotherDeceased">신랑 어머니 故 표기</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="brideFatherDeceased" name="deceased" value="신부 아버지 故 표기">
+                                <label for="brideFatherDeceased">신부 아버지 故 표기</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="brideMotherDeceased" name="deceased" value="신부 어머니 故 표기">
+                                <label for="brideMotherDeceased">신부 어머니 故 표기</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예식 정보 -->
+                <div class="section">
+                    <h3 class="section-title">예식 정보</h3>
+                    <div class="form-group">
+                        <label>모시는 글을 선택해주세요 <span class="required">(필수)</span></label>
+                        <div class="radio-group">
+                            <div class="radio-item" onclick="document.getElementById('sample1').click()">
+                                <input type="radio" id="sample1" name="invitationText" value="샘플1" required>
+                                <div class="radio-content">
+                                    <div class="radio-title">샘플1</div>
+                                    <div class="radio-text">저희 두 사람이 소중한 분들을 모시고
+사랑의 결실을 이루려 합니다.
+
+오로지 믿음과 사랑만을 약속하는 귀한 날에
+축복의 걸음을 하시어 저희의 하나 됨을
+지켜보아 주시고 격려해 주시면
+더없는 기쁨으로 간직하겠습니다.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-item" onclick="document.getElementById('sample2').click()">
+                                <input type="radio" id="sample2" name="invitationText" value="샘플2" required>
+                                <div class="radio-content">
+                                    <div class="radio-title">샘플2</div>
+                                    <div class="radio-text">같은 생각,
+같은 마음으로 지혜롭게 살겠습니다.
+
+내 전부를 주어도 아깝지 않은 사람을 만났습니다.
+이제 저희 두 사람, 믿음과 사랑으로
+하나 되어 한 길을 가고자 합니다.
+
+함께 자리하시어 축복해 주시기 바랍니다.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-item" onclick="document.getElementById('sample3').click()">
+                                <input type="radio" id="sample3" name="invitationText" value="샘플3" required>
+                                <div class="radio-content">
+                                    <div class="radio-title">샘플3</div>
+                                    <div class="radio-text">꽃 잎은 두 손, 마주한 모습 속에서
+기쁨과 슬픔, 때로는 아픔을 함께하며
+자그마한 행복의 계단을 쌓아가겠습니다.
+
+저희의 이 언약을 함께 하시어
+축복해 주십시오.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-item" onclick="document.getElementById('sample4').click()">
+                                <input type="radio" id="sample4" name="invitationText" value="샘플4" required>
+                                <div class="radio-content">
+                                    <div class="radio-title">샘플4</div>
+                                    <div class="radio-text">우리가 처음 만난 그 자리에서
+저희 둘만 다른 세상에 있었던 듯
+서로만 눈에 들어왔습니다.
+
+이제, 그 둘이 함께 둘만의 세상을
+꾸려나가고자 합니다.
+
+함께 자리하시어 축복해 주시기 바랍니다.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-item" onclick="document.getElementById('custom').click()">
+                                <input type="radio" id="custom" name="invitationText" value="기타" required>
+                                <div class="radio-content">
+                                    <div class="radio-title">기타 (직접 작성)</div>
+                                    <div class="radio-text">직접 모시는 글을 작성하고 싶으시면 선택해주세요.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="customText" class="custom-text">
+                            <textarea id="customInvitationText" name="customInvitationText" placeholder="직접 작성하실 모시는 글을 입력해주세요"></textarea>
+                        </div>
+                        <div id="samplePreview" class="sample-preview"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="venueName">예식장명 <span class="optional">(선택사항)</span></label>
+                        <input type="text" id="venueName" name="venueName">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="venueFloorHall">예식장 층과 홀 이름 <span class="optional">(선택사항)</span></label>
+                        <input type="text" id="venueFloorHall" name="venueFloorHall">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="venueAddress">예식장 주소</label>
+                        <div class="address-group">
+                            <div class="address-input">
+                                <input type="text" id="venueAddress" name="venueAddress" placeholder="주소 검색 버튼을 클릭해주세요" readonly>
+                            </div>
+                            <button type="button" class="address-btn" onclick="searchAddress()">주소 검색</button>
+                        </div>
+                        <input type="text" id="venueAddressDetail" name="venueAddressDetail" placeholder="상세주소를 입력해주세요" style="margin-top: 15px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weddingDate">예식 일정</label>
+                        <div class="datetime-group">
+                            <input type="date" id="weddingDate" name="weddingDate">
+                            <input type="time" id="weddingTime" name="weddingTime">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 주문자 정보 -->
+                <div class="section">
+                    <h3 class="section-title">주문자 정보</h3>
+                    <div class="form-group">
+                        <label for="ordererName">주문자 성함 <span class="required">(필수)</span></label>
+                        <input type="text" id="ordererName" name="ordererName" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomLastNameEng">신랑 성 (영어) <span class="optional">(선택사항)</span></label>
+                            <input type="text" id="groomLastNameEng" name="groomLastNameEng" placeholder="선택사항">
+                        </div>
+                        <div class="form-group">
+                            <label for="groomFirstNameEng">신랑 이름 (영어) <span class="optional">(선택사항)</span></label>
+                            <input type="text" id="groomFirstNameEng" name="groomFirstNameEng" placeholder="선택사항">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="brideLastNameEng">신부 성 (영어) <span class="optional">(선택사항)</span></label>
+                            <input type="text" id="brideLastNameEng" name="brideLastNameEng" placeholder="선택사항">
+                        </div>
+                        <div class="form-group">
+                            <label for="brideFirstNameEng">신부 이름 (영어) <span class="optional">(선택사항)</span></label>
+                            <input type="text" id="brideFirstNameEng" name="brideFirstNameEng" placeholder="선택사항">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ordererPhone">주문자 연락처 <span class="optional">(선택사항)</span></label>
+                        <input type="tel" id="ordererPhone" name="ordererPhone" placeholder="010-1234-5678">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    정보 제출하기
+                </button>
+
+                <div id="statusMessage" class="status-message"></div>
+                
+                <div id="successContainer" class="success-container">
+                    <div class="success-title">✨ 작성해주셔서 감사합니다 ✨</div>
+                    <div class="success-message">아래 버튼을 클릭하시면 상담사에게 연결됩니다.
+꼭 상담사에게 "신청서 완료"라고 말씀해주세요.
+
+인사말 기타를 클릭해주신 고객님은 상담사에게 인사말을 전달해주세요.
+계좌번호 및 추가사항이 필요하신 고객님은 상담사에게 말씀해주시면 제작해드리겠습니다.
+
+시안 제작기간은 업무일 기준 1일 소요되며 인쇄 전 미리 고객님께 보내드립니다.</div>
+                    <a href="#" class="consultant-btn" id="consultantBtn">
+                        💬 상담사와 연결하기
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // EmailJS 초기화
+        emailjs.init("nsvla0kWskoDaA0Yk");
+
+        // Firebase 설정 (여기에 실제 Firebase 설정을 입력하세요)
+        const firebaseConfig = {
+            // 실제 Firebase 설정으로 교체
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "your-app-id"
+        };
+
+        // Firebase 초기화
+        let app, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log('Firebase 초기화 성공');
+        } catch (error) {
+            console.log('Firebase 설정이 필요합니다:', error);
+        }
+
+        // 다음 주소 검색
+        window.searchAddress = function() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById('venueAddress').value = data.address;
+                    document.getElementById('venueAddressDetail').focus();
+                }
+            }).open();
+        };
+
+        // CSV 파일 생성 함수
+        function generateCSV(data) {
+            const headers = [
+                '제출시간', '주문자성함', '주문자연락처',
+                '신랑성', '신랑이름', '신부성', '신부이름',
+                '신랑아버지성', '신랑아버지이름', '신랑어머니성', '신랑어머니이름', '신랑관계',
+                '신부아버지성', '신부아버지이름', '신부어머니성', '신부어머니이름', '신부관계',
+                '고인표기', '모시는글', '커스텀모시는글',
+                '예식장명', '예식장층홀', '예식장주소', '예식장상세주소',
+                '예식날짜', '예식시간',
+                '신랑성영어', '신랑이름영어', '신부성영어', '신부이름영어'
+            ];
+
+            const now = new Date();
+            const submitTime = now.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // 고인표기 처리
+            const deceasedList = Array.from(document.querySelectorAll('input[name="deceased"]:checked'))
+                .map(cb => cb.value).join(', ');
+
+            // 모시는글 처리
+            let invitationContent = '';
+            if (data.invitationText === '기타') {
+                invitationContent = data.customInvitationText || '';
+            } else {
+                const sampleTexts = {
+                    '샘플1': `저희 두 사람이 소중한 분들을 모시고 사랑의 결실을 이루려 합니다. 오로지 믿음과 사랑만을 약속하는 귀한 날에 축복의 걸음을 하시어 저희의 하나 됨을 지켜보아 주시고 격려해 주시면 더없는 기쁨으로 간직하겠습니다.`,
+                    '샘플2': `같은 생각, 같은 마음으로 지혜롭게 살겠습니다. 내 전부를 주어도 아깝지 않은 사람을 만났습니다. 이제 저희 두 사람, 믿음과 사랑으로 하나 되어 한 길을 가고자 합니다. 함께 자리하시어 축복해 주시기 바랍니다.`,
+                    '샘플3': `꽃 잎은 두 손, 마주한 모습 속에서 기쁨과 슬픔, 때로는 아픔을 함께하며 자그마한 행복의 계단을 쌓아가겠습니다. 저희의 이 언약을 함께 하시어 축복해 주십시오.`,
+                    '샘플4': `우리가 처음 만난 그 자리에서 저희 둘만 다른 세상에 있었던 듯 서로만 눈에 들어왔습니다. 이제, 그 둘이 함께 둘만의 세상을 꾸려나가고자 합니다. 함께 자리하시어 축복해 주시기 바랍니다.`
+                };
+                invitationContent = sampleTexts[data.invitationText] || data.invitationText;
+            }
+
+            const values = [
+                submitTime,
+                data.ordererName || '',
+                data.ordererPhone || '',
+                data.groomLastName || '',
+                data.groomFirstName || '',
+                data.brideLastName || '',
+                data.brideFirstName || '',
+                data.groomFatherLastName || '',
+                data.groomFatherFirstName || '',
+                data.groomMotherLastName || '',
+                data.groomMotherFirstName || '',
+                data.groomRelation || '',
+                data.brideFatherLastName || '',
+                data.brideFatherFirstName || '',
+                data.brideMotherLastName || '',
+                data.brideMotherFirstName || '',
+                data.brideRelation || '',
+                deceasedList,
+                data.invitationText || '',
+                data.customInvitationText || '',
+                data.venueName || '',
+                data.venueFloorHall || '',
+                data.venueAddress || '',
+                data.venueAddressDetail || '',
+                data.weddingDate || '',
+                data.weddingTime || '',
+                data.groomLastNameEng || '',
+                data.groomFirstNameEng || '',
+                data.brideLastNameEng || '',
+                data.brideFirstNameEng || ''
+            ];
+
+            // CSV 형식으로 변환 (UTF-8 BOM 추가)
+            const csvContent = '\ufeff' + [
+                headers.join(','),
+                values.map(value => {
+                    if (value && (value.includes(',') || value.includes('\n') || value.includes('"'))) {
+                        return `"${value.replace(/"/g, '""')}"`;
+                    }
+                    return value || '';
+                }).join(',')
+            ].join('\n');
+
+            return csvContent;
+        }
+
+        // 파일명 생성 함수
+        function generateFileName(data) {
+            const weddingDate = data.weddingDate || '';
+            const dateStr = weddingDate ? weddingDate.replace(/-/g, '').substring(4) : '0000'; // MMDD 형식
+            
+            const groomName = `${data.groomLastName || ''}${data.groomFirstName || ''}`;
+            const brideName = `${data.brideLastName || ''}${data.brideFirstName || ''}`;
+            
+            return `${dateStr}_${groomName}(${brideName}).csv`;
+        }
+
+        // 이메일 제목 생성 함수
+        function generateEmailSubject(data) {
+            const ordererName = data.ordererName || '고객';
+            const groomName = `${data.groomLastName || ''}${data.groomFirstName || ''}`;
+            const brideName = `${data.brideLastName || ''}${data.brideFirstName || ''}`;
+            
+            return `주문자_${ordererName} ${groomName}(${brideName})님의 신청서가 도착했습니다`;
+        }
+
+        // 라디오 버튼 선택 이벤트
+        const invitationRadios = document.querySelectorAll('input[name="invitationText"]');
+        const customTextDiv = document.getElementById('customText');
+        
+        invitationRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.radio-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                this.closest('.radio-item').classList.add('selected');
+                
+                if (this.value === '기타') {
+                    customTextDiv.classList.add('show');
+                    document.getElementById('customInvitationText').required = true;
+                } else {
+                    customTextDiv.classList.remove('show');
+                    document.getElementById('customInvitationText').required = false;
+                }
+            });
+        });
+
+        // 폼 제출 처리
+        const form = document.getElementById('weddingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const successContainer = document.getElementById('successContainer');
+        const consultantBtn = document.getElementById('consultantBtn');
+
+        function showMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccessPage() {
+            form.style.display = 'none';
+            successContainer.classList.add('show');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '제출 중...';
+
+            try {
+                // 폼 데이터 수집
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                console.log('수집된 데이터:', data);
+
+                // CSV 파일 생성
+                const csvContent = generateCSV(data);
+                const fileName = generateFileName(data);
+                const emailSubject = generateEmailSubject(data);
+
+                console.log('CSV 내용:', csvContent);
+                console.log('파일명:', fileName);
+                console.log('이메일 제목:', emailSubject);
+
+                // Firebase에 데이터 저장 (선택사항)
+                if (db) {
+                    try {
+                        const deceasedArray = Array.from(document.querySelectorAll('input[name="deceased"]:checked'))
+                            .map(cb => cb.value);
+                        
+                        const docRef = await addDoc(collection(db, 'weddingForms'), {
+                            ...data,
+                            deceased: deceasedArray,
+                            createdAt: serverTimestamp(),
+                            fileName: fileName
+                        });
+                        console.log('Firebase 저장 완료:', docRef.id);
+                    } catch (error) {
+                        console.log('Firebase 저장 오류:', error);
+                    }
+                }
+
+                // EmailJS로 이메일 전송
+                try {
+                    const templateParams = {
+                        to_email: 'pastelmovie@naver.com',
+                        subject: emailSubject,
+                        orderer_name: data.ordererName || '',
+                        groom_name: `${data.groomLastName || ''}${data.groomFirstName || ''}`,
+                        bride_name: `${data.brideLastName || ''}${data.brideFirstName || ''}`,
+                        wedding_date: data.weddingDate || '',
+                        wedding_time: data.weddingTime || '',
+                        venue_name: data.venueName || '',
+                        venue_address: `${data.venueAddress || ''} ${data.venueAddressDetail || ''}`,
+                        csv_content: csvContent,
+                        file_name: fileName,
+                        orderer_phone: data.ordererPhone || '',
+                        venue_floor: data.venueFloorHall || '',
+                        message: `새로운 결혼식 청첩장 신청서가 접수되었습니다.\n\n` +
+                                `주문자: ${data.ordererName || ''}\n` +
+                                `연락처: ${data.ordererPhone || ''}\n` +
+                                `신랑: ${data.groomLastName || ''}${data.groomFirstName || ''}\n` +
+                                `신부: ${data.brideLastName || ''}${data.brideFirstName || ''}\n` +
+                                `예식일시: ${data.weddingDate || ''} ${data.weddingTime || ''}\n` +
+                                `예식장: ${data.venueName || ''} ${data.venueFloorHall || ''}\n` +
+                                `주소: ${data.venueAddress || ''} ${data.venueAddressDetail || ''}\n\n` +
+                                `첨부된 CSV 파일을 확인해주세요.`
+                    };
+
+                    console.log('이메일 전송 시도:', templateParams);
+
+                    const result = await emailjs.send(
+                        'service_o88lamq',
+                        'template_tlnvl9l',
+                        templateParams
+                    );
+
+                    console.log('이메일 전송 성공:', result);
+                    showSuccessPage();
+
+                } catch (emailError) {
+                    console.error('이메일 전송 오류:', emailError);
+                    
+                    // 이메일 전송 실패해도 성공 페이지 표시 (데이터는 저장됨)
+                    showMessage('데이터가 저장되었지만 이메일 전송에 실패했습니다. 관리자에게 문의해주세요.', 'error');
+                    
+                    // 3초 후 성공 페이지 표시
+                    setTimeout(() => {
+                        showSuccessPage();
+                    }, 3000);
+                }
+
+            } catch (error) {
+                console.error('제출 오류:', error);
+                showMessage('제출 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '정보 제출하기';
+            }
+        });
+
+        consultantBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // 실제 상담사 연결 URL로 변경하세요
+            window.open('https://your-consultation-link.com', '_blank');
+        });
+
+        // 샘플 데이터 미리 입력 (테스트용)
+        window.addEventListener('load', () => {
+            document.getElementById('groomLastName').value = '나';
+            document.getElementById('groomFirstName').value = '하늘';
+            document.getElementById('brideLastName').value = '이';
+            document.getElementById('brideFirstName').value = '수미';
+            document.getElementById('groomFatherLastName').value = '나';
+            document.getElementById('groomFatherFirstName').value = '종옥';
+            document.getElementById('groomMotherLastName').value = '김';
+            document.getElementById('groomMotherFirstName').value = '옥순';
+            document.getElementById('groomRelation').value = '차남';
+            document.getElementById('brideFatherLastName').value = '이';
+            document.getElementById('brideFatherFirstName').value = '선주';
+            document.getElementById('brideMotherLastName').value = '김';
+            document.getElementById('brideMotherFirstName').value = '서은';
+            document.getElementById('brideRelation').value = '장녀';
+            document.getElementById('sample2').checked = true;
+            document.getElementById('sample2').closest('.radio-item').classList.add('selected');
+            document.getElementById('venueName').value = '노블레스 웨딩컨벤션';
+            document.getElementById('venueFloorHall').value = '노블레스홀 5층';
+            document.getElementById('venueAddress').value = '(16240) 경기 수원시 팔달구 팔달문로 128';
+            document.getElementById('venueAddressDetail').value = '5층';
+            document.getElementById('weddingDate').value = '2025-10-19';
+            document.getElementById('weddingTime').value = '12:30';
+            document.getElementById('ordererName').value = '이수미';
+            document.getElementById('ordererPhone').value = '010-9122-0287';
+        });
+    </script>
+</body>
+</html>
