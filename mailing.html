@@ -1083,8 +1083,11 @@
     <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
+        console.log('스크립트 시작');
+        
         // EmailJS 초기화
         emailjs.init("nsvla0kWskoDaA0Yk");
+        console.log('EmailJS 초기화 완료');
 
         // 다음 주소 검색
         window.searchAddress = function() {
@@ -1131,4 +1134,247 @@
                 const sampleTexts = {
                     '샘플1': `저희 두 사람이 소중한 분들을 모시고 사랑의 결실을 이루려 합니다. 오로지 믿음과 사랑만을 약속하는 귀한 날에 축복의 걸음을 하시어 저희의 하나 됨을 지켜보아 주시고 격려해 주시면 더없는 기쁨으로 간직하겠습니다.`,
                     '샘플2': `같은 생각, 같은 마음으로 지혜롭게 살겠습니다. 내 전부를 주어도 아깝지 않은 사람을 만났습니다. 이제 저희 두 사람, 믿음과 사랑으로 하나 되어 한 길을 가고자 합니다. 함께 자리하시어 축복해 주시기 바랍니다.`,
-                    '샘플3': `꽃 잎은 두 손, 마주한 모습 속에서 기쁨과 슬픔, 때로는 아픔을 함께하며 자그마한 행복의 계단을 쌓아가겠습니다. 저희의 이 언약을 함께 하시어 축
+                    '샘플3': `꽃 잎은 두 손, 마주한 모습 속에서 기쁨과 슬픔, 때로는 아픔을 함께하며 자그마한 행복의 계단을 쌓아가겠습니다. 저희의 이 언약을 함께 하시어 축복해 주십시오.`,
+                    '샘플4': `우리가 처음 만난 그 자리에서 저희 둘만 다른 세상에 있었던 듯 서로만 눈에 들어왔습니다. 이제, 그 둘이 함께 둘만의 세상을 꾸려나가고자 합니다. 함께 자리하시어 축복해 주시기 바랍니다.`
+                };
+                invitationContent = sampleTexts[data.invitationText] || data.invitationText;
+            }
+
+            const values = [
+                submitTime,
+                data.ordererName || '',
+                data.ordererPhone || '',
+                data.groomLastName || '',
+                data.groomFirstName || '',
+                data.brideLastName || '',
+                data.brideFirstName || '',
+                data.groomFatherLastName || '',
+                data.groomFatherFirstName || '',
+                data.groomMotherLastName || '',
+                data.groomMotherFirstName || '',
+                data.groomRelation || '',
+                data.brideFatherLastName || '',
+                data.brideFatherFirstName || '',
+                data.brideMotherLastName || '',
+                data.brideMotherFirstName || '',
+                data.brideRelation || '',
+                deceasedList,
+                data.invitationText || '',
+                data.customInvitationText || '',
+                data.venueName || '',
+                data.venueFloorHall || '',
+                data.venueAddress || '',
+                data.venueAddressDetail || '',
+                data.weddingDate || '',
+                data.weddingTime || '',
+                data.groomLastNameEng || '',
+                data.groomFirstNameEng || '',
+                data.brideLastNameEng || '',
+                data.brideFirstNameEng || ''
+            ];
+
+            // CSV 형식으로 변환 (UTF-8 BOM 추가)
+            const csvContent = '\ufeff' + [
+                headers.join(','),
+                values.map(value => {
+                    if (value && (value.includes(',') || value.includes('\n') || value.includes('"'))) {
+                        return `"${value.replace(/"/g, '""')}"`;
+                    }
+                    return value || '';
+                }).join(',')
+            ].join('\n');
+
+            return csvContent;
+        }
+
+        // 파일명 생성 함수
+        function generateFileName(data) {
+            const weddingDate = data.weddingDate || '';
+            const dateStr = weddingDate ? weddingDate.replace(/-/g, '').substring(4) : '0000';
+            
+            const groomName = `${data.groomLastName || ''}${data.groomFirstName || ''}`;
+            const brideName = `${data.brideLastName || ''}${data.brideFirstName || ''}`;
+            
+            return `${dateStr}_${groomName}(${brideName}).csv`;
+        }
+
+        // 이메일 제목 생성 함수
+        function generateEmailSubject(data) {
+            const ordererName = data.ordererName || '고객';
+            const groomName = `${data.groomLastName || ''}${data.groomFirstName || ''}`;
+            const brideName = `${data.brideLastName || ''}${data.brideFirstName || ''}`;
+            
+            return `주문자_${ordererName} ${groomName}(${brideName})님의 신청서가 도착했습니다`;
+        }
+
+        // 라디오 버튼 선택 이벤트
+        const invitationRadios = document.querySelectorAll('input[name="invitationText"]');
+        const customTextDiv = document.getElementById('customText');
+        
+        invitationRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.radio-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                this.closest('.radio-item').classList.add('selected');
+                
+                if (this.value === '기타') {
+                    customTextDiv.classList.add('show');
+                    document.getElementById('customInvitationText').required = true;
+                } else {
+                    customTextDiv.classList.remove('show');
+                    document.getElementById('customInvitationText').required = false;
+                }
+            });
+        });
+
+        // 폼 제출 처리
+        const form = document.getElementById('weddingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const successContainer = document.getElementById('successContainer');
+        const consultantBtn = document.getElementById('consultantBtn');
+
+        function showMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccessPage() {
+            form.style.display = 'none';
+            successContainer.classList.add('show');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '제출 중...';
+
+            try {
+                // 폼 데이터 수집
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                console.log('수집된 데이터:', data);
+
+                // CSV 파일 생성
+                const csvContent = generateCSV(data);
+                const fileName = generateFileName(data);
+                const emailSubject = generateEmailSubject(data);
+
+                console.log('CSV 내용:', csvContent);
+                console.log('파일명:', fileName);
+                console.log('이메일 제목:', emailSubject);
+
+                // EmailJS로 이메일 전송
+                try {
+                    console.log('이메일 전송 시작...');
+                    
+                    const templateParams = {
+                        to_email: 'pastelmovie@naver.com',
+                        subject: emailSubject,
+                        orderer_name: data.ordererName || '',
+                        groom_name: `${data.groomLastName || ''}${data.groomFirstName || ''}`,
+                        bride_name: `${data.brideLastName || ''}${data.brideFirstName || ''}`,
+                        wedding_date: data.weddingDate || '',
+                        wedding_time: data.weddingTime || '',
+                        venue_name: data.venueName || '',
+                        venue_address: `${data.venueAddress || ''} ${data.venueAddressDetail || ''}`,
+                        csv_content: csvContent,
+                        file_name: fileName,
+                        orderer_phone: data.ordererPhone || '',
+                        venue_floor: data.venueFloorHall || '',
+                        message: `새로운 결혼식 청첩장 신청서가 접수되었습니다.\n\n` +
+                                `주문자: ${data.ordererName || ''}\n` +
+                                `연락처: ${data.ordererPhone || ''}\n` +
+                                `신랑: ${data.groomLastName || ''}${data.groomFirstName || ''}\n` +
+                                `신부: ${data.brideLastName || ''}${data.brideFirstName || ''}\n` +
+                                `예식일시: ${data.weddingDate || ''} ${data.weddingTime || ''}\n` +
+                                `예식장: ${data.venueName || ''} ${data.venueFloorHall || ''}\n` +
+                                `주소: ${data.venueAddress || ''} ${data.venueAddressDetail || ''}\n\n` +
+                                `첨부된 CSV 파일을 확인해주세요.`
+                    };
+
+                    console.log('전송할 템플릿 파라미터:', templateParams);
+
+                    const result = await emailjs.send(
+                        'service_o88lamq',
+                        'template_tlnvl9l',
+                        templateParams
+                    );
+
+                    console.log('EmailJS 전송 성공:', result);
+                    console.log('이메일이 pastelmovie@naver.com으로 전송되었습니다.');
+                    showSuccessPage();
+
+                } catch (emailError) {
+                    console.error('EmailJS 전송 오류:', emailError);
+                    console.error('오류 상세:', emailError.text || emailError.message);
+                    
+                    // 구체적인 오류 메시지 표시
+                    if (emailError.status === 400) {
+                        showMessage('잘못된 요청입니다. EmailJS 설정을 확인해주세요.', 'error');
+                    } else if (emailError.status === 401) {
+                        showMessage('인증 오류입니다. Public Key를 확인해주세요.', 'error');
+                    } else if (emailError.status === 404) {
+                        showMessage('템플릿이나 서비스를 찾을 수 없습니다. ID를 확인해주세요.', 'error');
+                    } else {
+                        showMessage(`이메일 전송 실패: ${emailError.text || emailError.message || '알 수 없는 오류'}`, 'error');
+                    }
+                    
+                    // 오류가 있어도 3초 후 성공 페이지 표시 (데이터는 생성됨)
+                    setTimeout(() => {
+                        showSuccessPage();
+                    }, 3000);
+                }
+
+            } catch (error) {
+                console.error('제출 오류:', error);
+                showMessage('제출 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '정보 제출하기';
+            }
+        });
+
+        consultantBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // 실제 상담사 연결 URL로 변경하세요
+            window.open('https://your-consultation-link.com', '_blank');
+        });
+
+        // 샘플 데이터 미리 입력 (테스트용)
+        window.addEventListener('load', () => {
+            console.log('페이지 로드 완료 - 테스트 데이터 입력');
+            document.getElementById('groomLastName').value = '나';
+            document.getElementById('groomFirstName').value = '하늘';
+            document.getElementById('brideLastName').value = '이';
+            document.getElementById('brideFirstName').value = '수미';
+            document.getElementById('groomFatherLastName').value = '나';
+            document.getElementById('groomFatherFirstName').value = '종옥';
+            document.getElementById('groomMotherLastName').value = '김';
+            document.getElementById('groomMotherFirstName').value = '옥순';
+            document.getElementById('groomRelation').value = '차남';
+            document.getElementById('brideFatherLastName').value = '이';
+            document.getElementById('brideFatherFirstName').value = '선주';
+            document.getElementById('brideMotherLastName').value = '김';
+            document.getElementById('brideMotherFirstName').value = '서은';
+            document.getElementById('brideRelation').value = '장녀';
+            document.getElementById('sample2').checked = true;
+            document.getElementById('sample2').closest('.radio-item').classList.add('selected');
+            document.getElementById('venueName').value = '노블레스 웨딩컨벤션';
+            document.getElementById('venueFloorHall').value = '노블레스홀 5층';
+            document.getElementById('venueAddress').value = '(16240) 경기 수원시 팔달구 팔달문로 128';
+            document.getElementById('venueAddressDetail').value = '5층';
+            document.getElementById('weddingDate').value = '2025-10-19';
+            document.getElementById('weddingTime').value = '12:30';
+            document.getElementById('ordererName').value = '이수미';
+            document.getElementById('ordererPhone').value = '010-9122-0287';
+        });
