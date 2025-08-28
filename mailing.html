@@ -1270,30 +1270,108 @@
                 console.log('파일명:', fileName);
                 console.log('이메일 제목:', emailSubject);
 
+                // 고인표기 정보 수집
+                const deceasedList = Array.from(document.querySelectorAll('input[name="deceased"]:checked'))
+                    .map(cb => cb.value);
+                const deceasedText = deceasedList.length > 0 ? deceasedList.join(', ') : '응답 없음';
+                
+                // 예식 일시 포맷팅
+                const weddingDateTime = data.weddingDate && data.weddingTime 
+                    ? `${data.weddingDate.replace(/-/g, '.')} ${data.weddingTime.replace(':', '시 ')}분`
+                    : (data.weddingDate ? data.weddingDate.replace(/-/g, '.') : '응답 없음');
+
+                // 예식장 전체 주소
+                const fullAddress = `${data.venueAddress || ''} ${data.venueAddressDetail || ''}`.trim() || '응답 없음';
+
+                // 이메일 본문 생성
+                const emailMessage = `종이청첩장 신청서 폼에 새로운 응답이 추가되었습니다.
+
+1. 신랑님의 성을 적어주세요
+${data.groomLastName || '응답 없음'}
+
+2. 신랑님의 이름을 적어주세요
+${data.groomFirstName || '응답 없음'}
+
+3. 신부님의 성을 적어주세요
+${data.brideLastName || '응답 없음'}
+
+4. 신부님의 이름을 적어주세요
+${data.brideFirstName || '응답 없음'}
+
+1. 신랑 아버님 성을 적어주세요
+${data.groomFatherLastName || '응답 없음'}
+
+2. 신랑 아버님 이름을 적어주세요
+${data.groomFatherFirstName || '응답 없음'}
+
+3. 신랑 어머님 성을 적어주세요
+${data.groomMotherLastName || '응답 없음'}
+
+4. 신랑 어머님 성함을 적어주세요
+${data.groomMotherFirstName || '응답 없음'}
+
+5. 신랑 부모님과의 관계
+${data.groomRelation || '응답 없음'}
+
+1. 신부 아버님 성을 적어주세요
+${data.brideFatherLastName || '응답 없음'}
+
+2. 신부 아버님 이름을 적어주세요
+${data.brideFatherFirstName || '응답 없음'}
+
+3. 신부 어머님 성을 적어주세요
+${data.brideMotherLastName || '응답 없음'}
+
+4. 신부 어머님 성함을 적어주세요
+${data.brideMotherFirstName || '응답 없음'}
+
+5. 신부 부모님과의 관계
+${data.brideRelation || '응답 없음'}
+
+6. 고인 표기
+${deceasedText}
+
+모시는 글을 작성해주세요
+${data.invitationText || '응답 없음'}${data.invitationText === '기타' && data.customInvitationText ? '\n' + data.customInvitationText : ''}
+
+예식장 명을 적어주세요
+${data.venueName || '응답 없음'}
+
+예식장 층과 홀 이름을 적어주세요
+${data.venueFloorHall || '응답 없음'}
+
+예식장 주소를 입력해주세요
+${fullAddress}
+
+예식 일정을 적어주세요
+${weddingDateTime}
+
+추가 요청사항(계좌번호 추가와 인사말 변경을 원하실 경우 신청서 받으신 카톡으로 내용을 바로 보내주세요^^)
+응답 없음
+
+★ 주문자 성함 (주문하신 고객님의 성함을 꼭 남겨주세요) ★
+${data.ordererName || '응답 없음'}
+
+신랑 성을 영어로 적어주세요
+${data.groomLastNameEng || '응답 없음'}
+
+신랑 이름을 영어로 적어주세요
+${data.groomFirstNameEng || '응답 없음'}
+
+신부 성을 영어로 적어주세요
+${data.brideLastNameEng || '응답 없음'}
+
+신부 이름을 영어로 적어주세요
+${data.brideFirstNameEng || '응답 없음'}
+
+주문자 연락처 (상담 카톡없이 신청서 먼저 작성 시에 기재해주세요)
+${data.ordererPhone || '응답 없음'}`;
+
                 // EmailJS로 이메일 전송
                 const templateParams = {
                     to_email: 'pastelmovie@naver.com',
                     subject: emailSubject,
-                    orderer_name: data.ordererName || '',
-                    groom_name: `${data.groomLastName || ''}${data.groomFirstName || ''}`,
-                    bride_name: `${data.brideLastName || ''}${data.brideFirstName || ''}`,
-                    wedding_date: data.weddingDate || '',
-                    wedding_time: data.weddingTime || '',
-                    venue_name: data.venueName || '',
-                    venue_address: `${data.venueAddress || ''} ${data.venueAddressDetail || ''}`,
-                    csv_content: csvContent,
-                    file_name: fileName,
-                    orderer_phone: data.ordererPhone || '',
-                    venue_floor: data.venueFloorHall || '',
-                    message: `새로운 결혼식 청첩장 신청서가 접수되었습니다.\n\n` +
-                            `주문자: ${data.ordererName || ''}\n` +
-                            `연락처: ${data.ordererPhone || ''}\n` +
-                            `신랑: ${data.groomLastName || ''}${data.groomFirstName || ''}\n` +
-                            `신부: ${data.brideLastName || ''}${data.brideFirstName || ''}\n` +
-                            `예식일시: ${data.weddingDate || ''} ${data.weddingTime || ''}\n` +
-                            `예식장: ${data.venueName || ''} ${data.venueFloorHall || ''}\n` +
-                            `주소: ${data.venueAddress || ''} ${data.venueAddressDetail || ''}\n\n` +
-                            `첨부된 CSV 파일을 확인해주세요.`
+                    message: emailMessage
                 };
 
                 console.log('이메일 전송 시도:', templateParams);
@@ -1305,12 +1383,12 @@
                 );
 
                 console.log('이메일 전송 성공:', result);
-                showMessage('신청서가 성공적으로 제출되었습니다!', 'success');
                 
-                // 2초 후 성공 페이지 표시
+                // 성공 메시지 표시 후 성공 페이지로 이동
+                showMessage('신청서가 성공적으로 제출되었습니다!', 'success');
                 setTimeout(() => {
                     showSuccessPage();
-                }, 2000);
+                }, 1500);
 
             } catch (error) {
                 console.error('제출 오류:', error);
