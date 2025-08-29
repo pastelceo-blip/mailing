@@ -1260,8 +1260,14 @@
             const successContainer = document.getElementById('successContainer');
             console.log('successContainer 찾음:', successContainer);
             if (successContainer) {
+                // 모든 가능한 방법으로 표시 시도
                 successContainer.style.display = 'block';
+                successContainer.style.visibility = 'visible';
+                successContainer.style.opacity = '1';
+                successContainer.style.position = 'relative';
+                successContainer.style.zIndex = '9999';
                 successContainer.classList.add('show');
+                successContainer.classList.remove('hide');
                 console.log('successContainer 표시 처리됨');
             }
             
